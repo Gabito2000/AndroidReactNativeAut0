@@ -1,38 +1,52 @@
-import { SafeAreaView, View, Text } from 'react-native';
+import { SafeAreaView, View, Text, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import React, { useState,useEffect } from 'react'
 import * as Location from 'expo-location';
+import NetInfo from "@react-native-community/netinfo";
+import { ConnectionLost } from './ConnectionLost';
+
 
 export default function App() {
-
   const [viewport, setViewport] = useState(<View><Text>Cargando...</Text></View>);
-  const requestLocationPermission = async () => {
-    try {
+  
+  useEffect(() => {
+    // Retorna funcion para borrar el evento.
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected){
+        setViewport(
+          <WebView
+            style={{ flex: 1 }}
+            source={{ uri: 'https://apexweb.2d979ceb.nip.io/' }}
+            javaScriptEnabled = {true}
+            geolocationEnabled={true}
+            setBuiltInZoomControls={false}
+        />)
+      } else {
+        setViewport(<ConnectionLost />)
+      }
+    });
+
+    const requestLocationPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Para usar la app cómodamente, permite el acceso a la configuración');
-        return;
+        Alert.alert(
+          "Localización",
+          "Para una mejor experiencia, activa la ubicación de esta App desde la configuración de tu celular",
+          [
+            { text: "OK" }
+          ]
+        );
       }
-      setViewport(
-        <WebView
-          style={{ flex: 1 }}
-          source={{ uri: 'https://bee6-2800-a4-3313-7000-9cd1-739c-8a26-17bf.sa.ngrok.io/' }}
-          javaScriptEnabled = {true}
-          geolocationEnabled={true}
-        />)
-    } catch (err) {
-    console.warn(err);
     }
-  };
-
-  useEffect(() => {
     requestLocationPermission();
+    return () => unsubscribe();
   },[]);
-
+  
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {viewport}
-      </SafeAreaView>
+    </SafeAreaView>
   );
+
 }
 
