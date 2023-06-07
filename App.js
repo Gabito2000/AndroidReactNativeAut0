@@ -31,7 +31,7 @@ export default function App() {
           <WebView
             onLoad={() => hideSpinner()}
             style={{ flex: 1 }}
-            source={{ uri: 'https://apexweb.2d979ceb.nip.io/' }}
+            source={{ uri: 'https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?client_id=890192&response_type=token&redirect_uri=https://openidconnect.net/callback' }}
             javaScriptEnabled = {true}
             geolocationEnabled={true}
             setBuiltInZoomControls={false}
