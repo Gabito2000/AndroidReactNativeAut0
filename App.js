@@ -1,14 +1,18 @@
-import { ActivityIndicator, BackHandler, Dimensions, SafeAreaView, View, Text, Alert } from 'react-native';
+import { ActivityIndicator, BackHandler, Dimensions, SafeAreaView, View, Text, Alert, Picker, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { WebView } from 'react-native-webview';
 import React, { useState, useEffect, useRef } from 'react';
 import * as Location from 'expo-location';
 import NetInfo from "@react-native-community/netinfo";
-import { ConnectionLost } from './ConnectionLost';
-
+import { ConnectionLost } from './src/ConnectionLost';
+import { PantallaReact } from './src/PantallaReact';
 export default function App() {
-  const [viewport, setViewport] = useState(<View></View>);
+  const [viewport, setViewport] = useState(<ActivityIndicator size="large" color="#0000ff" />);
   const [visible, setVisible] = useState(true);
   const webViewRef = useRef();
+  const [token, setToken] = useState(null);
+  const [location, setLocation] = useState(null);
+  const callbackUrl = 'http://localhost:8080';
+
   const handleBackButtonPress = () => {
     try {
         webViewRef.current?.goBack()
@@ -23,20 +27,26 @@ export default function App() {
         BackHandler.removeEventListener("hardwareBackPress", handleBackButtonPress)
     };
   }, []);
+  const onCallbackSaveTocken = (navState)=>{
+    console.log ('navState', navState);
+    if (navState.url.startsWith(callbackUrl)) {
+      setViewport(<PantallaReact />);
+    }
+  }
   useEffect(() => {
     // Retorna funcion para borrar el evento.
     const unsubscribe = NetInfo.addEventListener(state => {
       if (state.isConnected){
-        setViewport(
-          <WebView
-            onLoad={() => hideSpinner()}
-            style={{ flex: 1 }}
-            source={{ uri: 'https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?client_id=890192&response_type=token&redirect_uri=https://openidconnect.net/callback' }}
-            javaScriptEnabled = {true}
-            geolocationEnabled={true}
-            setBuiltInZoomControls={false}
-            ref={webViewRef}
-        />)
+        setViewport(<WebView
+          onLoad={() => hideSpinner()}
+          style={{ flex: 1 }}
+          source={{ uri: 'https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?&scope=openid%20personal_info%20email%20document&client_id=890192&response_type=code&redirect_uri=http://localhost:8080 ' }}
+          javaScriptEnabled = {true}
+          geolocationEnabled={true}
+          setBuiltInZoomControls={false}
+          ref={webViewRef}
+          onNavigationStateChange={onCallbackSaveTocken}
+        />);
       } else {
         setViewport(<ConnectionLost />)
       }
@@ -63,15 +73,9 @@ export default function App() {
     };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={ { flex: 1} }>
       {viewport}
-      {visible && (
-        <ActivityIndicator
-          style={{ position: "absolute", top: Dimensions.get('window').height/2-18, left: Dimensions.get('window').width/2-18 }}
-          size="large"
-        />
-      )}
-      </SafeAreaView>
+    </SafeAreaView>
   );
 
 }
