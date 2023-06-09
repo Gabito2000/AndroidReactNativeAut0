@@ -2,7 +2,7 @@
 App native contenedora del proyecto web
 
 # EXECUTE
-
+ yarn run android
 
 # BUILD
  eas build --platform android
