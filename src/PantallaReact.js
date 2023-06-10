@@ -261,8 +261,6 @@ let trips = [
   },
 ];
 
-// trips = trips.filter((trip) => trip.viaje.idChoferes.includes(idChofer));
-
 const returnViajesFromGuiaViajes = () => {
   const viajes = new Map();
   trips.forEach((trip) => {
@@ -281,6 +279,7 @@ const viajes = returnViajesFromGuiaViajes();
 export const PantallaReact = () => {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [tripStarted, setTripStarted] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleStartTrip = () => {
     // Code to start the selected trip
@@ -316,9 +315,42 @@ export const PantallaReact = () => {
     );
   };
 
-  const onRefresh = console.log('refreshing');
-
-  const refreshing = false;
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Code to refresh the list
+    fetch('https://www.google.com', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then(() => {
+      console.log('Refreshed');
+      trips.push({
+        "guia_viaje": {
+          "destino": "Gooogle",
+          "fechaHora": "30/10/2021 13:45",
+          "id": 10,
+          "idViajes": [555],
+          "origen": "Gooogle",
+          "rubroCarga": "Carga general",
+          "tipoCarga": "Carga general",
+          "volumenCarga": 9.8
+        },
+        "viaje": {
+          "estado": "EN_CURSO",
+          "fechaHoraFin": null,
+          "fechaHoraInicio": "30/10/2021 13:45",
+          "id": 555,
+          "idChoferes": [3],
+          "idGuiaViaje": 10,
+          "idVehiculo": 5
+        }
+      });
+      setRefreshing(false);
+    });
+    
+  };
 
   return (
     <ScrollView
@@ -332,11 +364,11 @@ export const PantallaReact = () => {
             <Text style={styles.heading}>Select a Trip:</Text>
             <SafeAreaView style={styles.tableContainer}>
               <View style={styles.tableRow}>
-                <Text style={styles.tableHeader}>Origin</Text>
-                <Text style={styles.tableHeader}>Destination</Text>
-                <Text style={styles.tableHeader}>Date</Text>
-                <Text style={styles.tableHeader}>Trip ID</Text>
-                <Text style={styles.tableHeader}>Status</Text>
+                <Text style={styles.tableHeader}>Origen</Text>
+                <Text style={styles.tableHeader}>Destino</Text>
+                <Text style={styles.tableHeader}>Fecha</Text>
+                <Text style={styles.tableHeader}>Chapa</Text>
+                <Text style={styles.tableHeader}>Estado</Text>
               </View>
               {trips.map((item) => {return (
                   <TouchableOpacity key={item.viaje.id} onPress={() => {item.viaje.id === selectedTrip ? setSelectedTrip(null) : setSelectedTrip(item.viaje.id)}}>
@@ -344,7 +376,7 @@ export const PantallaReact = () => {
                       <Text style={styles.tableCell}>{`${item.guia_viaje.origen}`}</Text>
                       <Text style={styles.tableCell}>{`${item.guia_viaje.destino}`}</Text>
                       <Text style={styles.tableCell}>{`${item.guia_viaje.fechaHora}`}</Text>
-                      <Text style={styles.tableCell}>{`${item.viaje.id}`}</Text>
+                      <Text style={styles.tableCell}>{`${item.viaje.idVehiculo}`}</Text>
                       <Text style={styles.tableCell}>{`${item.viaje.estado}`}</Text>
                     </View>
                     {selectedTrip && (selectedTrip == item.viaje.id) && (
