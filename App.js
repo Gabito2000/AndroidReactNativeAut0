@@ -12,7 +12,6 @@ export default function App() {
   const [token, setToken] = useState(null);
   const [location, setLocation] = useState(null);
   const callbackUrl = 'http://localhost:8080';
-
   const handleBackButtonPress = () => {
     try {
         webViewRef.current?.goBack()
@@ -40,7 +39,7 @@ export default function App() {
         setViewport(<WebView
           onLoad={() => hideSpinner()}
           style={{ flex: 1 }}
-          source={{ uri: 'https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?&scope=openid%20personal_info%20email%20document&client_id=890192&response_type=code&redirect_uri=http://localhost:8080 ' }}
+          source={{ uri: 'https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?&scope=openid%20personal_info%20email%20document&client_id=890192&response_type=code&redirect_uri=http://localhost:8080' }}
           javaScriptEnabled = {true}
           geolocationEnabled={true}
           setBuiltInZoomControls={false}

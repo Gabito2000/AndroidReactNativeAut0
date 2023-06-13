@@ -27,7 +27,7 @@ export const LocationSender = (idViaje) => {
 
         const options = {
           accuracy: Location.Accuracy.BestForNavigation,
-          timeInterval: 5000, // Update every 5 seconds
+          timeInterval: 60000, // Update every 60 seconds
           distanceInterval: 0, // Update on any distance change
           pausesUpdatesAutomatically: false, // Continue updates in the background
         };
@@ -49,9 +49,21 @@ export const LocationSender = (idViaje) => {
     const handleLocationUpdate = (location) => {
       const { latitude, longitude } = location.coords;
 
-      const timestamp = new Date().toISOString();
-      const data = { latitude, longitude, timestamp, idViaje: 1 };
+      let timestamp = new Date().toISOString();
+      //convert timestamp to yyyy-mm-dd hh:mm:ss format
 
+      timestamp  = timestamp.replace('T', ' ');
+
+      const data = [
+        {
+          "fechaHora": timestamp,
+          "idViaje": idViaje,
+          "posicion": {
+            "latitud": latitude,
+            "longitud": longitude
+          }
+        }
+      ]
       // Send location data to server
       sendLocationData(data);
 
@@ -61,16 +73,16 @@ export const LocationSender = (idViaje) => {
 
     const sendLocationData = async (data) => {
       try {
-        // Simulated server request
         console.log('Sending location data to server:', data);
 
-        // Simulating request failure for demonstration purposes
-        const isSuccess = Math.random() < 0.8; // 80% success rate
-        if (!isSuccess) {
-          throw new Error('Failed to send location data');
-        }
+        await fetch('https://httpstat.us/500', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
 
-        // Successfully sent to the server, remove from local storage
         setLocationData(prevData => prevData.filter(item => item !== data));
       } catch (err) {
         console.log('Error sending location data:', err);

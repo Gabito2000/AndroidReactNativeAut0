@@ -296,6 +296,10 @@ export const PantallaReact = () => {
     // Code to end the selected trip
     setTripStarted(false);
   };
+  const handleCloseSesion = () => {
+    // Code to end the selected trip
+    setTripStarted(false);
+  };
 
   const renderTripDetails = () => {
     if (!selectedTrip) return null;
@@ -304,13 +308,13 @@ export const PantallaReact = () => {
 
     return (
       <View style={styles.tripDetailsContainer}>
-        <Text style={styles.tripDetailsText}>Trip Details:</Text>
-        <Text style={styles.tripDetailsText}>Origin: {trip.guia_viaje.origen}</Text>
-        <Text style={styles.tripDetailsText}>Destination: {trip.guia_viaje.destino}</Text>
-        <Text style={styles.tripDetailsText}>Date: {trip.guia_viaje.fechaHora}</Text>
-        <Text style={styles.tripDetailsText}>Type: {trip.guia_viaje.tipoCarga}</Text>
-        <Text style={styles.tripDetailsText}>Category: {trip.guia_viaje.rubroCarga}</Text>
-        <Text style={styles.tripDetailsText}>Volume: {trip.guia_viaje.volumenCarga}</Text>
+        <Text style={styles.tripDetailsText}>Viaje Detalles:</Text>
+        <Text style={styles.tripDetailsText}>Origen: {trip.guia_viaje.origen}</Text>
+        <Text style={styles.tripDetailsText}>Destino: {trip.guia_viaje.destino}</Text>
+        <Text style={styles.tripDetailsText}>Fecha: {trip.guia_viaje.fechaHora}</Text>
+        <Text style={styles.tripDetailsText}>Tipo: {trip.guia_viaje.tipoCarga}</Text>
+        <Text style={styles.tripDetailsText}>Categoría: {trip.guia_viaje.rubroCarga}</Text>
+        <Text style={styles.tripDetailsText}>Volumen: {trip.guia_viaje.volumenCarga}</Text>
       </View>
     );
   };
@@ -361,7 +365,7 @@ export const PantallaReact = () => {
       <View style={styles.container}>
         {!tripStarted && (
           <>
-            <Text style={styles.heading}>Select a Trip:</Text>
+            <Text style={styles.heading}>Elige un Viaje:</Text>
             <SafeAreaView style={styles.tableContainer}>
               <View style={styles.tableRow}>
                 <Text style={styles.tableHeader}>Origen</Text>
@@ -382,7 +386,7 @@ export const PantallaReact = () => {
                     {selectedTrip && (selectedTrip == item.viaje.id) && (
                       <View style={styles.tripContainer}>
                         {renderTripDetails()}
-                        <Button title="Start Trip" onPress={handleStartTrip} />
+                        <Button title="Empezar Viaje" onPress={handleStartTrip} />
                       </View>
                     )}
                     {/* add black line */}
@@ -395,19 +399,19 @@ export const PantallaReact = () => {
         {tripStarted && (
           <View style={styles.tripContainer}>
             {renderTripDetails()}
-            <Text>Trip Started!</Text>
+            <Text>Viaje comenzado!</Text>
             <LocationSender idViaje={selectedTrip} />
             <View style={styles.buttonContainer}>
               <View style={styles.buttonContainer}>
-                <Button title="Cancel Trip" onPress={handleCancelTrip} />
+                <Button title="Cancelar Viaje" onPress={handleCancelTrip} />
               </View>
               <View style={styles.buttonContainer}>
-                <Button title="End Trip" onPress={handleEndTrip} />
+                <Button title="Terminar Viaje" onPress={handleEndTrip} />
               </View>
             </View>
           </View>
         )}
-        
+        <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
       </View>
     </ScrollView>
   );
@@ -416,9 +420,16 @@ export const PantallaReact = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  tripContainer: {
+    width: '100%', // Take up the full width
+    height: 'auto',
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
   },
   heading: {
     fontSize: 24,
@@ -436,9 +447,6 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     textAlign: 'center',
-  },
-  tripContainer: {
-    alignItems: 'center',
   },
   tripDetailsContainer: {
     marginBottom: 20,
