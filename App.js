@@ -1,4 +1,4 @@
-import { ActivityIndicator, BackHandler, Dimensions, SafeAreaView, View, Text, Alert, Picker, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { ActivityIndicator, BackHandler, Dimensions, SafeAreaView, View, Text, Alert, Picker, TouchableOpacity, StyleSheet, FlatList, Button } from 'react-native';
 import { WebView } from 'react-native-webview';
 import React, { useState, useEffect, useRef } from 'react';
 import * as Location from 'expo-location';
@@ -14,6 +14,9 @@ export default function App() {
   const baseUrl = "http://cargauy-tse23.web.elasticloud.uy"
   const initLoginUrl = baseUrl + "/services/rest/gubUy/reservar?onSuccess=http://localhost:8080/success&onFailure=http://localhost:8080/failure"
   const callbackUrl = 'http://localhost:8080';
+
+  const handleCloseSesion = () => {
+  }
 
   const generateWebView = () => {
     fetch(initLoginUrl, { 
@@ -62,9 +65,16 @@ export default function App() {
   }, []);
   const onCallbackSaveTocken = (navState)=>{
     console.log ('navState', navState);
-    if (navState.url.startsWith(callbackUrl)) {
-      setViewport(<PantallaReact />);
-    }
+    // if (navState.url.startsWith(callbackUrl)) {
+    // if (navState.url.startsWith(baseUrl)) {
+      
+      setViewport(
+      <>
+        <PantallaReact />
+        <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
+      </>
+      );
+    // }
   }
   useEffect(() => {
     // Retorna funcion para borrar el evento.

@@ -27,7 +27,7 @@ export const LocationSender = (idViaje) => {
 
         const options = {
           accuracy: Location.Accuracy.BestForNavigation,
-          timeInterval: 60000, // Update every 60 seconds
+          timeInterval: 10000, // Update every 60 seconds
           distanceInterval: 0, // Update on any distance change
           pausesUpdatesAutomatically: false, // Continue updates in the background
         };
@@ -59,7 +59,7 @@ export const LocationSender = (idViaje) => {
       const data = [
         {
           "fechaHora": timestamp,
-          "idViaje": idViaje,
+          "idViaje": idViaje.idViaje,
           "posicion": {
             "latitud": latitude,
             "longitud": longitude
@@ -75,15 +75,26 @@ export const LocationSender = (idViaje) => {
 
     const sendLocationData = async (data) => {
       try {
-        console.log('Sending location data to server:', data);
+        console.log('Sending location data to server:', JSON.stringify(data));
+        console.log('Sending location data to server:', JSON.stringify([
+          {
+            "fechaHora": "2023-06-10 09:30:00",
+            "idViaje": 1,
+            "posicion": {
+              "latitud": 37.7749,
+              "longitud": -122.4194
+            }
+          }
+        ]));
 
-        await fetch('https://httpstat.us/500', {
+        await fetch('http://2d979ceb.nip.io:8080/cargauy-external/hello-servlet', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'html/text',
           },
           body: JSON.stringify(data),
-        });
+        }).then((response) => console.log("sending data response",response));
+
 
         setLocationData(prevData => prevData.filter(item => item !== data));
       } catch (err) {

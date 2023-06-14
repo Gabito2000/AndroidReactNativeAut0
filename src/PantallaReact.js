@@ -21,7 +21,7 @@ let trips = [
       "estado": "EN_CURSO",
       "fechaHoraFin": null,
       "fechaHoraInicio": "17/09/2021 10:00",
-      "id": 17,
+      "id": 1,
       "idChoferes": [1],
       "idGuiaViaje": 1,
       "idVehiculo": 1
@@ -296,10 +296,6 @@ export const PantallaReact = () => {
     // Code to end the selected trip
     setTripStarted(false);
   };
-  const handleCloseSesion = () => {
-    // Code to end the selected trip
-    setTripStarted(false);
-  };
 
   const renderTripDetails = () => {
     if (!selectedTrip) return null;
@@ -411,7 +407,6 @@ export const PantallaReact = () => {
             </View>
           </View>
         )}
-        <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
       </View>
     </ScrollView>
   );
