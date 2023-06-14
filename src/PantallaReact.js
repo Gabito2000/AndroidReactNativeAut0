@@ -3,6 +3,9 @@ import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, SafeAreaVie
 import { Picker } from '@react-native-picker/picker';
 import { LocationSender } from './LocationSender';
 
+const baseUrl = "http://cargauy-tse23.web.elasticloud.uy" //TODO PONER TODO ESTO EN UN SOLO LADO
+const urlViajes = baseUrl + "/services/rest/viaje"
+
 const idChofer = 1;
 
 let trips = [
@@ -276,11 +279,11 @@ const guia_viajes = trips.map((trip) => trip.guia_viaje);
 
 const viajes = returnViajesFromGuiaViajes();
 
-export const PantallaReact = () => {
+export const PantallaReact = (tokenObj) => {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [tripStarted, setTripStarted] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  let token = tokenObj.token;
   const handleStartTrip = () => {
     // Code to start the selected trip
     setTripStarted(true);
@@ -318,37 +321,19 @@ export const PantallaReact = () => {
   const onRefresh = () => {
     setRefreshing(true);
     // Code to refresh the list
-    fetch('https://www.google.com', {
+    fetch(urlViajes, {
       method: 'GET',
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Authorization: `${token}`,
       },
-    }).then(() => {
-      console.log('Refreshed');
-      trips.push({
-        "guia_viaje": {
-          "destino": "Gooogle",
-          "fechaHora": "30/10/2021 13:45",
-          "id": 10,
-          "idViajes": [555],
-          "origen": "Gooogle",
-          "rubroCarga": "Carga general",
-          "tipoCarga": "Carga general",
-          "volumenCarga": 9.8
-        },
-        "viaje": {
-          "estado": "EN_CURSO",
-          "fechaHoraFin": null,
-          "fechaHoraInicio": "30/10/2021 13:45",
-          "id": 555,
-          "idChoferes": [3],
-          "idGuiaViaje": 10,
-          "idVehiculo": 5
-        }
-      });
+    }).then((response) => {
+      return response.json();
+    }).then((viajes) => {
+      console.log(viajes);
+      trips = viajes;
       setRefreshing(false);
-    });
+    }
+    );
     
   };
 

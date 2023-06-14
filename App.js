@@ -14,7 +14,7 @@ export default function App() {
   const baseUrl = "http://cargauy-tse23.web.elasticloud.uy"
   const initLoginUrl = baseUrl + "/services/rest/gubUy/reservar?onSuccess=http://localhost:8080/success&onFailure=http://localhost:8080/failure"
   const callbackUrl = 'http://localhost:8080';
-
+  let  urlForLoginAndLogoutSantiago = ""
   const handleCloseSesion = () => {
   }
 
@@ -26,6 +26,7 @@ export default function App() {
    })
    .then((initialUri) => {
       console.log("initialUri", initialUri)
+      urlForLoginAndLogoutSantiago = initialUri
       initialUri= baseUrl + "/services/rest/gubUy/verificar?url=" + initialUri
       const unsubscribe = NetInfo.addEventListener(state => {
         if (state.isConnected){
@@ -66,14 +67,29 @@ export default function App() {
   const onCallbackSaveTocken = (navState)=>{
     console.log ('navState', navState);
     // if (navState.url.startsWith(callbackUrl)) {
-    // if (navState.url.startsWith(baseUrl)) {
-      
-      setViewport(
-      <>
-        <PantallaReact />
-        <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
-      </>
-      );
+    //   fetch(navState.url.replace(callbackUrl, baseUrl), {  
+    //     method: 'GET',
+    //   }).then((response) => {
+    //     fetch(baseUrl + "/services/rest/gubUy/verificar?url=" + urlForLoginAndLogoutSantiago, {
+    //       method: 'GET',
+    //     }).then((response) => {
+    //       return response.text();
+    //     }).then((token) => {
+          let token = "ewogICAgImlkIjogIjQ3NTkxMzg5IiwKICAgICJyb2wiOiAiQ0lVREFEQU5PIiwKICAgICJzZWN1cml0eSI6ICIzRjQ3QjE5QSIKfQ=="
+          setViewport(
+            <>
+              <PantallaReact token={token}/>
+              <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
+            </>
+            );
+    //     }).catch((error) => {
+    //       console.log("error", error)
+    //       setViewport(<ConnectionLost />)
+    //     });
+    //   }).catch((error) => {
+    //     console.log("error", error)
+    //     setViewport(<ConnectionLost />)
+    //   });
     // }
   }
   useEffect(() => {
