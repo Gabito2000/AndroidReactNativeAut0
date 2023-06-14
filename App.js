@@ -15,9 +15,7 @@ export default function App() {
   const initLoginUrl = baseUrl + "/services/rest/gubUy/reservar?onSuccess=http://localhost:8080/success&onFailure=http://localhost:8080/failure"
   const callbackUrl = 'http://localhost:8080';
   let  urlForLoginAndLogoutSantiago = ""
-  const handleCloseSesion = () => {
-  }
-
+  
   const generateWebView = () => {
     fetch(initLoginUrl, { 
       method: 'GET',
@@ -41,13 +39,91 @@ export default function App() {
             onNavigationStateChange={onCallbackSaveTocken}
           />);
         } else {
-          setViewport(<ConnectionLost />)
+          setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
         }
       });
     }).catch((error) => {
       console.log("error", error)
-      setViewport(<ConnectionLost />)
+      setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
     });
+  }
+  
+  const onCallbackLogout = (navState) => {
+    console.log("onCallbackLogout", navState)
+    if (navState.url.startsWith(callbackUrl)) {
+      fetch(navState.url.replace(callbackUrl, baseUrl), {
+        method: 'GET',
+      }).then((response) => {
+        console.log("response", response)
+        generateWebView()
+      }).catch((error) => {
+        console.log("error", error)
+        setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+      });
+    }
+  }
+
+  const handleCloseSesion = () => {
+    console.log("handleCloseSesion")
+    fetch(initLoginUrl, { 
+      method: 'GET',
+    }).then((response) => {
+      return response.text();
+   }).then((initialUri) => {
+      console.log("initialUri", initialUri)
+      initialUri= baseUrl + "/services/rest/gubUy/logout?url=" + initialUri
+      setViewport(<WebView
+        onLoad={() => hideSpinner()}
+        style={{ flex: 1 }}
+        source={{ uri: initialUri }}
+        javaScriptEnabled = {true}
+        geolocationEnabled={true}
+        setBuiltInZoomControls={false}
+        ref={webViewRef}
+        onNavigationStateChange={onCallbackLogout}
+      />);
+    }).catch((error) => {
+      console.error(error);
+    }
+    );
+  }
+
+  const onConectionBack = () => {
+    console.log("onConectionBack")
+    generateWebView()
+  }
+
+  const onCallbackSaveTocken = (navState)=>{
+    console.log ('navState', navState);
+    if(navState.title == "Error"){
+      setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+    }
+
+    if (navState.url.startsWith(callbackUrl)) {
+      fetch(navState.url.replace(callbackUrl, baseUrl), {  
+        method: 'GET',
+      }).then((response) => {
+        fetch(baseUrl + "/services/rest/gubUy/verificar?url=" + urlForLoginAndLogoutSantiago, {
+          method: 'GET',
+        }).then((response) => {
+          return response.text();
+        }).then((token) => {
+          // let token = "ewogICAgImlkIjogIjQ3NTkxMzg5IiwKICAgICJyb2wiOiAiQ0lVREFEQU5PIiwKICAgICJzZWN1cml0eSI6ICIzRjQ3QjE5QSIKfQ=="
+          setViewport(
+            <>
+              <PantallaReact token={token}/>
+              <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
+            </>
+            );
+        }).catch((error) => {
+          console.log("error", error)
+          setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+        });
+      }).catch((error) => {
+        console.log("error", error)
+        setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+      });
+    }
   }
 
   const handleBackButtonPress = () => {
@@ -64,34 +140,7 @@ export default function App() {
         BackHandler.removeEventListener("hardwareBackPress", handleBackButtonPress)
     };
   }, []);
-  const onCallbackSaveTocken = (navState)=>{
-    console.log ('navState', navState);
-    // if (navState.url.startsWith(callbackUrl)) {
-    //   fetch(navState.url.replace(callbackUrl, baseUrl), {  
-    //     method: 'GET',
-    //   }).then((response) => {
-    //     fetch(baseUrl + "/services/rest/gubUy/verificar?url=" + urlForLoginAndLogoutSantiago, {
-    //       method: 'GET',
-    //     }).then((response) => {
-    //       return response.text();
-    //     }).then((token) => {
-          let token = "ewogICAgImlkIjogIjQ3NTkxMzg5IiwKICAgICJyb2wiOiAiQ0lVREFEQU5PIiwKICAgICJzZWN1cml0eSI6ICIzRjQ3QjE5QSIKfQ=="
-          setViewport(
-            <>
-              <PantallaReact token={token}/>
-              <Button title="Cerrar Sesión" onPress={handleCloseSesion} />
-            </>
-            );
-    //     }).catch((error) => {
-    //       console.log("error", error)
-    //       setViewport(<ConnectionLost />)
-    //     });
-    //   }).catch((error) => {
-    //     console.log("error", error)
-    //     setViewport(<ConnectionLost />)
-    //   });
-    // }
-  }
+  
   useEffect(() => {
     // Retorna funcion para borrar el evento.
     generateWebView();
