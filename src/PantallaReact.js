@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
 import { LocationSender } from './LocationSender';
 
 const baseUrl = "http://cargauy-tse23.web.elasticloud.uy" //TODO PONER TODO ESTO EN UN SOLO LADO
@@ -284,20 +283,43 @@ export const PantallaReact = (tokenObj) => {
   const [tripStarted, setTripStarted] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   let token = tokenObj.token;
+
+  const cambiarEstado = (idViaje, estado) => {
+    let url = baseUrl + "/services/rest/viaje/" + idViaje + "?estado=" + estado;
+    console.log(url);
+    fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: token,
+      },
+    }).then((response) => {
+      if (response.ok) {
+        console.log("Estado cambiado");
+      } else {
+        console.log("Error al cambiar estado");
+      }
+    }
+    );
+  }
+
   const handleStartTrip = () => {
     // Code to start the selected trip
     setTripStarted(true);
+    cambiarEstado(selectedTrip, "COMENZADO");
   };
 
   const handleCancelTrip = () => {
     // Code to cancel the selected trip
     setSelectedTrip(null);
     setTripStarted(false);
+    cambiarEstado(selectedTrip, "CANCELADO");
   };
 
   const handleEndTrip = () => {
     // Code to end the selected trip
     setTripStarted(false);
+    cambiarEstado(selectedTrip, "FINALIZADO");
+    onRefresh();
   };
 
   const renderTripDetails = () => {
@@ -314,6 +336,7 @@ export const PantallaReact = (tokenObj) => {
         <Text style={styles.tripDetailsText}>Tipo: {trip.guia_viaje.tipoCarga}</Text>
         <Text style={styles.tripDetailsText}>Categoría: {trip.guia_viaje.rubroCarga}</Text>
         <Text style={styles.tripDetailsText}>Volumen: {trip.guia_viaje.volumenCarga}</Text>
+        <Text style={styles.tripDetailsText}>ID: {trip.viaje.id}</Text>
       </View>
     );
   };
@@ -336,6 +359,11 @@ export const PantallaReact = (tokenObj) => {
     );
     
   };
+
+  //executes one time when the component is mounted
+  useEffect(() => {
+    onRefresh();
+  }, []);
 
   return (
     <ScrollView
