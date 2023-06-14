@@ -50,9 +50,11 @@ export const LocationSender = (idViaje) => {
       const { latitude, longitude } = location.coords;
 
       let timestamp = new Date().toISOString();
-      //convert timestamp to yyyy-mm-dd hh:mm:ss format
+      //convert timestamp to yyyy-mm-dd hh:mm format
 
       timestamp  = timestamp.replace('T', ' ');
+      timestamp  = timestamp.replace('Z', '');
+      timestamp = timestamp.substring(0, timestamp.length - 4);
 
       const data = [
         {

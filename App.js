@@ -11,7 +11,41 @@ export default function App() {
   const webViewRef = useRef();
   const [token, setToken] = useState(null);
   const [location, setLocation] = useState(null);
+  const baseUrl = "http://cargauy-tse23.web.elasticloud.uy"
+  const initLoginUrl = baseUrl + "/services/rest/gubUy/reservar?onSuccess=http://localhost:8080/success&onFailure=http://localhost:8080/failure"
   const callbackUrl = 'http://localhost:8080';
+
+  const generateWebView = () => {
+    fetch(initLoginUrl, { 
+      method: 'GET',
+    }).then((response) => {
+      return response.text();
+   })
+   .then((initialUri) => {
+      console.log("initialUri", initialUri)
+      initialUri= baseUrl + "/services/rest/gubUy/verificar?url=" + initialUri
+      const unsubscribe = NetInfo.addEventListener(state => {
+        if (state.isConnected){
+          setViewport(<WebView
+            onLoad={() => hideSpinner()}
+            style={{ flex: 1 }}
+            source={{ uri: initialUri }}
+            javaScriptEnabled = {true}
+            geolocationEnabled={true}
+            setBuiltInZoomControls={false}
+            ref={webViewRef}
+            onNavigationStateChange={onCallbackSaveTocken}
+          />);
+        } else {
+          setViewport(<ConnectionLost />)
+        }
+      });
+    }).catch((error) => {
+      console.log("error", error)
+      setViewport(<ConnectionLost />)
+    });
+  }
+
   const handleBackButtonPress = () => {
     try {
         webViewRef.current?.goBack()
@@ -34,22 +68,7 @@ export default function App() {
   }
   useEffect(() => {
     // Retorna funcion para borrar el evento.
-    const unsubscribe = NetInfo.addEventListener(state => {
-      if (state.isConnected){
-        setViewport(<WebView
-          onLoad={() => hideSpinner()}
-          style={{ flex: 1 }}
-          source={{ uri: 'https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?&scope=openid%20personal_info%20email%20document&client_id=890192&response_type=code&redirect_uri=http://localhost:8080' }}
-          javaScriptEnabled = {true}
-          geolocationEnabled={true}
-          setBuiltInZoomControls={false}
-          ref={webViewRef}
-          onNavigationStateChange={onCallbackSaveTocken}
-        />);
-      } else {
-        setViewport(<ConnectionLost />)
-      }
-    });
+    generateWebView();
 
     const requestLocationPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
