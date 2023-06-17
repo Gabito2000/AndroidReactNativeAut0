@@ -24,7 +24,7 @@ export default function App() {
    })
    .then((initialUri) => {
       console.log("initialUri", initialUri)
-      urlForLoginAndLogoutSantiago = initialUri
+      urlForLoginAndLogoutSantiago = encodeURIComponent(initialUri)
       initialUri= baseUrl + "/services/rest/gubUy/verificar?url=" + initialUri
       const unsubscribe = NetInfo.addEventListener(state => {
         if (state.isConnected){
@@ -44,7 +44,7 @@ export default function App() {
       });
     }).catch((error) => {
       console.log("error", error)
-      setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+      setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
     });
   }
   
@@ -58,7 +58,7 @@ export default function App() {
         generateWebView()
       }).catch((error) => {
         console.log("error", error)
-        setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+        setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
       });
     }
   }
@@ -96,7 +96,7 @@ export default function App() {
   const onCallbackSaveTocken = (navState)=>{
     console.log ('navState', navState);
     if(navState.title == "Error"){
-      setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+      setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
     }
 
     if (navState.url.startsWith(callbackUrl)) {
@@ -117,11 +117,11 @@ export default function App() {
             );
         }).catch((error) => {
           console.log("error", error)
-          setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+          setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
         });
       }).catch((error) => {
         console.log("error", error)
-        setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+        setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
       });
     }
   }

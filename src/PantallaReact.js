@@ -353,11 +353,11 @@ export const PantallaReact = (tokenObj) => {
       return response.json();
     }).then((viajes) => {
       console.log(viajes);
-      trips = viajes;
+      trips = viajes.sort((a, b) => {
+        return a.viaje.id - b.viaje.id;
+      });
       setRefreshing(false);
-    }
-    );
-    
+    });
   };
 
   //executes one time when the component is mounted
@@ -377,6 +377,7 @@ export const PantallaReact = (tokenObj) => {
             <Text style={styles.heading}>Elige un Viaje:</Text>
             <SafeAreaView style={styles.tableContainer}>
               <View style={styles.tableRow}>
+                <Text style={styles.tableHeader}>ID</Text>
                 <Text style={styles.tableHeader}>Origen</Text>
                 <Text style={styles.tableHeader}>Destino</Text>
                 <Text style={styles.tableHeader}>Fecha</Text>
@@ -386,6 +387,7 @@ export const PantallaReact = (tokenObj) => {
               {trips.map((item) => {return (
                   <TouchableOpacity key={item.viaje.id} onPress={() => {item.viaje.id === selectedTrip ? setSelectedTrip(null) : setSelectedTrip(item.viaje.id)}}>
                     <View style={styles.tableRow}>
+                      <Text style={styles.tableCell}>{`${item.viaje.id}`}</Text>
                       <Text style={styles.tableCell}>{`${item.guia_viaje.origen}`}</Text>
                       <Text style={styles.tableCell}>{`${item.guia_viaje.destino}`}</Text>
                       <Text style={styles.tableCell}>{`${item.guia_viaje.fechaHora}`}</Text>
