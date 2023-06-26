@@ -12,7 +12,7 @@ export default function App() {
   const webViewRef = useRef();
   const [location, setLocation] = useState(null);
   const baseUrl = "https://cargauy-tse23.web.elasticloud.uy"
-  const baseUrlEzequiel = "https://cargauy-tse23.web.elasticloud.uy/cargauy-web"
+  const baseUrlEzequiel = "https://mi-testing.iduruguay.gub.uy/logout-process"
 
   const initLoginUrl = baseUrl + "/services/rest/gubUy/reservar?onSuccess=http://localhost:8080/success&onFailure=http://localhost:8080/failure"
   const initLogoutUrl = baseUrl + "/services/rest/gubUy/logout?"
