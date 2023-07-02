@@ -90,6 +90,7 @@ export const PantallaReact = (tokenObj) => {
 
   const onRefresh = () => {
     setRefreshing(true);
+    console.log("token: ",token)
     // Code to refresh the list
     fetch(urlViajes, {
       method: 'GET',
@@ -99,7 +100,9 @@ export const PantallaReact = (tokenObj) => {
     }).then((response) => {
       return response.json();
     }).then((viajes) => {
-      console.log(viajes);
+      viajes.forEach((viaje) => {
+        console.log(viaje);
+      });
       trips = viajes.sort((a, b) => {
         return a.viaje.id - b.viaje.id;
       });

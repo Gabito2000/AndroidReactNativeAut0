@@ -28,6 +28,9 @@ export default function App() {
    })
    .then((initialUri) => {
       urlForLoginAndLogoutSantiago = initialUri
+      if(initialUri.includes("502 Ambiente detenido")){
+        return setViewport(<ConnectionLost onConectionBack={onConectionBack}/>)
+      }
       const unsubscribe = NetInfo.addEventListener(state => {
         if (state.isConnected){
           setViewport(<WebView
@@ -45,7 +48,7 @@ export default function App() {
         }
       });
     }).catch((error) => {
-      console.log("error", error)
+      console.log("error on get", error)
       setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
     });
   }
@@ -97,9 +100,11 @@ export default function App() {
   const onCallbackSaveTocken = (navState)=>{
     console.log ('navState', navState);
     if(navState.title == "Error"){
-      // setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
+      setViewport(<ConnectionLost onConectionBack={onConectionBack} />)
     }
     if (navState.url.startsWith(callbackUrl)) {
+      setVisible(true)
+      setViewport()
       console.log("callbackUrl", navState.url.replace(callbackUrl, baseUrl))
       fetch(navState.url.replace(callbackUrl, baseUrl), {  
         method: 'GET',
@@ -114,7 +119,7 @@ export default function App() {
           token = encode(json.toString())
           return token;
         }).then((token) => {
-          // let token = "ewogICAgImlkIjogIjQ3NTkxMzg5IiwKICAgICJyb2wiOiAiQ0lVREFEQU5PIiwKICAgICJzZWN1cml0eSI6ICIzRjQ3QjE5QSIKfQ=="
+          hideSpinner()
           setViewport(
             <>
               <PantallaReact token={token}/>
